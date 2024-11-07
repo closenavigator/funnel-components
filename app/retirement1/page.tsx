@@ -1,7 +1,5 @@
 import RetirementSavingsVisualization from '@/components/RetirementSavingsVisualization'
 
-import RetirementSavingsVisualization from '@/components/RetirementSavingsVisualization'
-
 // Add static generation
 export const dynamic = 'force-static'
 
