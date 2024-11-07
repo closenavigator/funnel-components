@@ -79,7 +79,59 @@ const CustomTooltip: React.FC<{ active?: boolean; payload?: any[]; label?: strin
 
 "use client"
 
+"use client"
+
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label as UILabel } from "@/components/ui/label"
+import { Slider } from "@/components/ui/slider"
+import { Button } from "@/components/ui/button"
+import { PlusIcon, MinusIcon } from "@radix-ui/react-icons"
+import { motion, AnimatePresence } from "framer-motion"
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Label, ResponsiveContainer } from 'recharts'
+
 export default function RetirementSavingsVisualization() {
+  // Add missing state variables
+  const [monthlyContribution, setMonthlyContribution] = useState(5000)
+  const [viewerAge, setViewerAge] = useState(30)
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
+  
+  // Add missing people data
+  const people = [
+    { name: 'María', startAge: 25, color: '#3b82f6', avatar: '👩' },
+    { name: 'Juan', startAge: 35, color: '#ef4444', avatar: '👨' },
+    { name: 'Ana', startAge: 45, color: '#10b981', avatar: '👩‍🦰' }
+  ]
+
+  // Add missing retirementData calculation
+  const retirementData = useMemo(() => {
+    return calculateSavingsOverTime(monthlyContribution, viewerAge, 40)
+  }, [monthlyContribution, viewerAge])
+
+  // Add missing handler functions
+  const adjustMonthlyContribution = (amount: number) => {
+    setMonthlyContribution(prev => Math.max(1000, Math.min(20000, prev + amount)))
+  }
+
+  const handleMonthlyContributionChange = (value: string) => {
+    const num = parseInt(value)
+    if (!isNaN(num)) {
+      setMonthlyContribution(Math.max(1000, Math.min(20000, num)))
+    }
+  }
+
+  const adjustViewerAge = (amount: number) => {
+    setViewerAge(prev => Math.max(20, Math.min(65, prev + amount)))
+  }
+
+  const handleViewerAgeChange = (value: string) => {
+    const num = parseInt(value)
+    if (!isNaN(num)) {
+      setViewerAge(Math.max(20, Math.min(65, num)))
+    }
+  }
+
   return (
     <Card className="w-full max-w-7xl mx-auto">
       <CardHeader>
