@@ -7,7 +7,11 @@ export async function GET() {
   
   const embedCode = `
 <!-- Retirement Calculator Embed -->
-<div id="retirement-calculator"></div>
+<div id="retirement-calculator" style="min-height: 800px; position: relative;">
+  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+    Cargando calculadora...
+  </div>
+</div>
 <script>
   (function() {
     const script = document.createElement('script');
