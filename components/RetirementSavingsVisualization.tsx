@@ -77,39 +77,40 @@ const CustomTooltip: React.FC<{ active?: boolean; payload?: any[]; label?: strin
   return null
 }
 
-"use client"
-
-"use client"
-
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label as UILabel } from "@/components/ui/label"
-import { Slider } from "@/components/ui/slider"
-import { Button } from "@/components/ui/button"
-import { PlusIcon, MinusIcon } from "@radix-ui/react-icons"
-import { motion, AnimatePresence } from "framer-motion"
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Label, ResponsiveContainer } from 'recharts'
-
 export default function RetirementSavingsVisualization() {
-  // Add missing state variables
   const [monthlyContribution, setMonthlyContribution] = useState(5000)
   const [viewerAge, setViewerAge] = useState(30)
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
-  
-  // Add missing people data
-  const people = [
+
+  const people = useMemo(() => [
     { name: 'María', startAge: 25, color: '#3b82f6', avatar: '👩' },
     { name: 'Juan', startAge: 35, color: '#ef4444', avatar: '👨' },
     { name: 'Ana', startAge: 45, color: '#10b981', avatar: '👩‍🦰' }
-  ]
+  ], [])
 
-  // Add missing retirementData calculation
   const retirementData = useMemo(() => {
-    return calculateSavingsOverTime(monthlyContribution, viewerAge, 40)
-  }, [monthlyContribution, viewerAge])
+    const maxYears = Math.max(...people.map(p => 65 - p.startAge))
+    const data: SavingsData[] = []
+    
+    for (let year = 0; year <= maxYears; year++) {
+      const dataPoint: SavingsData = { age: viewerAge + year }
+      
+      people.forEach(person => {
+        if (viewerAge + year >= person.startAge) {
+          const personYears = viewerAge + year - person.startAge
+          const personData = calculateSavingsOverTime(monthlyContribution, person.startAge, personYears)
+          dataPoint[person.name] = personData[personData.length - 1]?.total || 0
+        } else {
+          dataPoint[person.name] = 0
+        }
+      })
+      
+      data.push(dataPoint)
+    }
+    
+    return data
+  }, [monthlyContribution, viewerAge, people])
 
-  // Add missing handler functions
   const adjustMonthlyContribution = (amount: number) => {
     setMonthlyContribution(prev => Math.max(1000, Math.min(20000, prev + amount)))
   }
