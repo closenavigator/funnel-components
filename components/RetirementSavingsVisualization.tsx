@@ -77,94 +77,15 @@ const CustomTooltip: React.FC<{ active?: boolean; payload?: any[]; label?: strin
   return null
 }
 
+"use client"
+
 export default function RetirementSavingsVisualization() {
-  const [monthlyContribution, setMonthlyContribution] = useState(4000)
-  const [viewerAge, setViewerAge] = useState(30)
-  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
-  const [retirementData, setRetirementData] = useState<SavingsData[]>([])
-
-  const people: Person[] = useMemo(() => [
-    { 
-      name: 'María', 
-      startAge: 25, 
-      color: 'rgba(59, 130, 246, 0.7)',
-      avatar: '👩‍🦰'
-    },
-    { 
-      name: 'Tú', 
-      startAge: viewerAge, 
-      color: 'rgba(16, 185, 129, 0.7)',
-      avatar: '👤'
-    },
-    { 
-      name: 'Ana', 
-      startAge: 45, 
-      color: 'rgba(249, 115, 22, 0.7)',
-      avatar: '👩‍🦳'
-    },
-  ], [viewerAge])
-
-  const debouncedSetMonthlyContribution = useCallback(
-    debounce((value: number) => setMonthlyContribution(value), 300),
-    []
-  )
-
-  const debouncedSetViewerAge = useCallback(
-    debounce((value: number) => setViewerAge(value), 300),
-    []
-  )
-
-  useEffect(() => {
-    const newData: SavingsData[] = []
-    const maxAge = Math.max(...people.map(p => p.startAge + (65 - p.startAge)))
-
-    for (let age = 20; age <= maxAge; age++) {
-      const dataPoint: SavingsData = { age }
-      people.forEach(person => {
-        if (age >= person.startAge) {
-          const personData = calculateSavingsOverTime(monthlyContribution, person.startAge, age - person.startAge)
-          dataPoint[person.name] = personData[personData.length - 1].total
-        } else {
-          dataPoint[person.name] = 0
-        }
-      })
-      newData.push(dataPoint)
-    }
-
-    setRetirementData(newData)
-    setSelectedPerson(prevSelected => prevSelected || people[1])
-  }, [monthlyContribution, viewerAge, people])
-
-  const handleMonthlyContributionChange = (value: string) => {
-    const numValue = parseInt(value, 10)
-    if (!isNaN(numValue) && numValue >= 0) {
-      debouncedSetMonthlyContribution(numValue)
-    }
-  }
-
-  const adjustMonthlyContribution = (amount: number) => {
-    setMonthlyContribution(prev => Math.max(0, prev + amount))
-  }
-
-  const handleViewerAgeChange = (value: string) => {
-    const numValue = parseInt(value, 10)
-    if (!isNaN(numValue) && numValue >= 20 && numValue <= 65) {
-      debouncedSetViewerAge(numValue)
-    }
-  }
-
-  const adjustViewerAge = (amount: number) => {
-    setViewerAge(prev => Math.min(65, Math.max(20, prev + amount)))
-  }
-
   return (
-    <Card className="w-full max-w-4xl bg-white shadow-xl">
-      <CardHeader className="text-center">
-        <CardTitle className="text-3xl font-bold text-gray-900">
-          El Poder del Tiempo en Tus Ahorros
-        </CardTitle>
-        <CardDescription className="text-lg text-gray-600">
-          Visualiza cómo empezar a ahorrar antes puede impactar tu futuro financiero
+    <Card className="w-full max-w-7xl mx-auto">
+      <CardHeader>
+        <CardTitle>Calculadora de Retiro</CardTitle>
+        <CardDescription>
+          Visualiza el impacto del tiempo en tus ahorros para el retiro
         </CardDescription>
       </CardHeader>
       <CardContent>

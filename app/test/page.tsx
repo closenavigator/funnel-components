@@ -1,9 +1,9 @@
 import RetirementSavingsVisualization from '@/components/RetirementSavingsVisualization'
 
-export default function RetirementPage() {
+export default function TestPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center p-4 bg-gray-50">
+    <div className="w-full max-w-7xl mx-auto p-4">
       <RetirementSavingsVisualization />
-    </main>
+    </div>
   )
 } 
