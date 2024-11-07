@@ -1,9 +1,11 @@
 import RetirementSavingsVisualization from '@/components/RetirementSavingsVisualization'
 
+export const revalidate = 3600 // Revalidate every hour
+
 export default function TestPage() {
   return (
-    <div className="w-full max-w-7xl mx-auto p-4">
+    <main className="container mx-auto p-4">
       <RetirementSavingsVisualization />
-    </div>
+    </main>
   )
 } 
