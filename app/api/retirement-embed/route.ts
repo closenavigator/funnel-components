@@ -3,7 +3,7 @@ import { headers } from 'next/headers'
 
 export async function GET() {
   const headersList = headers()
-  const domain = headersList.get('host') || 'localhost:3000'
+  const domain = headersList.get('host') || 'funnel-components.vercel.app'
   
   const embedCode = `
 <!-- Retirement Calculator Embed -->
@@ -26,6 +26,9 @@ export async function GET() {
   return new NextResponse(embedCode, {
     headers: {
       'Content-Type': 'text/html',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET',
+      'Access-Control-Allow-Headers': 'Content-Type',
     },
   })
 } 
