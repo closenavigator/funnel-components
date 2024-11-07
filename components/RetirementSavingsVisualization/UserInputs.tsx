@@ -7,9 +7,9 @@ import { formatCurrency } from '@/lib/format'
 
 interface UserInputsProps {
   monthlyContribution: number
-  setMonthlyContribution: (value: number) => void
+  setMonthlyContribution: (value: number | ((prev: number) => number)) => void
   viewerAge: number
-  setViewerAge: (value: number) => void
+  setViewerAge: (value: number | ((prev: number) => number)) => void
 }
 
 export function UserInputs({
@@ -19,7 +19,7 @@ export function UserInputs({
   setViewerAge
 }: UserInputsProps) {
   const adjustMonthlyContribution = (amount: number) => {
-    setMonthlyContribution(prev => Math.max(1000, Math.min(20000, prev + amount)))
+    setMonthlyContribution((prev: number) => Math.max(1000, Math.min(20000, prev + amount)))
   }
 
   const handleMonthlyContributionChange = (value: string) => {
@@ -27,6 +27,17 @@ export function UserInputs({
     if (!isNaN(num)) {
       setMonthlyContribution(Math.max(1000, Math.min(20000, num)))
     }
+  }
+
+  const handleViewerAgeChange = (value: string) => {
+    const num = parseInt(value)
+    if (!isNaN(num)) {
+      setViewerAge(Math.max(20, Math.min(65, num)))
+    }
+  }
+
+  const adjustViewerAge = (amount: number) => {
+    setViewerAge((prev: number) => Math.max(20, Math.min(65, prev + amount)))
   }
 
   return (
@@ -86,7 +97,7 @@ export function UserInputs({
           <Button 
             variant="outline" 
             size="icon"
-            onClick={() => setViewerAge(Math.max(20, viewerAge - 1))}
+            onClick={() => adjustViewerAge(-1)}
             aria-label="Disminuir edad"
           >
             <MinusIcon className="h-4 w-4" />
@@ -95,12 +106,7 @@ export function UserInputs({
             id="viewer-age"
             type="number"
             value={viewerAge}
-            onChange={(e) => {
-              const num = parseInt(e.target.value)
-              if (!isNaN(num)) {
-                setViewerAge(Math.max(20, Math.min(65, num)))
-              }
-            }}
+            onChange={(e) => handleViewerAgeChange(e.target.value)}
             className="text-center text-lg font-medium"
             min={20}
             max={65}
@@ -109,7 +115,7 @@ export function UserInputs({
           <Button 
             variant="outline" 
             size="icon"
-            onClick={() => setViewerAge(Math.min(65, viewerAge + 1))}
+            onClick={() => adjustViewerAge(1)}
             aria-label="Aumentar edad"
           >
             <PlusIcon className="h-4 w-4" />
