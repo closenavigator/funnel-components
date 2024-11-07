@@ -4,13 +4,18 @@
     minHeight: 500,
     maxWidth: 1200,
     defaultHeight: 800,
-    mobileBreakpoint: 768
+    mobileBreakpoint: 768,
+    padding: 16
   };
 
   // Utility functions
   const isMobile = () => window.innerWidth < config.mobileBreakpoint;
+  const getContainerWidth = () => {
+    const container = document.getElementById('retirement-calculator');
+    return container ? container.offsetWidth : window.innerWidth;
+  };
   
-  // Create container styles with mobile-first approach
+  // Create container styles with better integration
   const containerStyles = `
     width: 100%;
     max-width: ${config.maxWidth}px;
@@ -19,24 +24,10 @@
     position: relative;
     overflow: hidden;
     -webkit-overflow-scrolling: touch;
+    background: transparent;
   `;
 
-  // Create loading indicator with better mobile support
-  const loadingStyles = `
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    font-family: system-ui, -apple-system, sans-serif;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    z-index: 1000;
-  `;
-
-  // Create and style iframe with mobile optimizations
+  // Create and style iframe with better integration
   const iframe = document.createElement('iframe');
   const currentScript = document.currentScript;
   const scriptUrl = new URL(currentScript.src);
@@ -47,101 +38,82 @@
     width: 100%;
     height: ${isMobile() ? config.minHeight : config.defaultHeight}px;
     border: none;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    border-radius: ${isMobile() ? '4px' : '8px'};
+    box-shadow: none;
     opacity: 0;
     transition: opacity 0.3s ease;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
+    background: transparent;
   `;
-  
-  // Create loading indicator with better UX
-  const loading = document.createElement('div');
-  loading.innerHTML = `
-    <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="animation: spin 1s linear infinite;">
-        <circle cx="12" cy="12" r="10" stroke-width="4" stroke-dasharray="31.4 31.4" transform="rotate(0 12 12)"/>
-      </svg>
-      <span>Cargando calculadora...</span>
-    </div>
-  `;
-  loading.style.cssText = loadingStyles;
-  
-  // Add iframe to container with error handling
+
+  // Add iframe to container with better sizing
   const container = document.getElementById('retirement-calculator');
   if (container) {
     try {
       container.style.cssText = containerStyles;
-      container.appendChild(loading);
       container.appendChild(iframe);
 
-      // Add error handling
-      iframe.onerror = () => {
-        loading.innerHTML = 'Error al cargar la calculadora. Por favor, intente nuevamente.';
-      };
-
-      // Handle iframe load with retry mechanism
-      let retryCount = 0;
-      const maxRetries = 3;
-      
-      const tryLoad = () => {
-        iframe.onload = () => {
-          iframe.style.opacity = '1';
-          loading.style.display = 'none';
+      // Handle iframe load with dynamic sizing
+      const handleIframeLoad = () => {
+        iframe.style.opacity = '1';
+        
+        // Initial size adjustment
+        const adjustSize = () => {
+          const width = getContainerWidth();
+          const aspectRatio = isMobile() ? 1.2 : 1.5; // Adjust these values as needed
+          const calculatedHeight = Math.min(
+            Math.max(width / aspectRatio, config.minHeight),
+            config.defaultHeight
+          );
+          
+          iframe.style.height = `${calculatedHeight}px`;
+          container.style.height = `${calculatedHeight}px`;
         };
-
-        iframe.onerror = () => {
-          if (retryCount < maxRetries) {
-            retryCount++;
-            setTimeout(tryLoad, 1000 * retryCount);
-          } else {
-            loading.innerHTML = 'Error al cargar la calculadora. Por favor, intente nuevamente.';
-          }
-        };
+        
+        adjustSize();
+        
+        // Handle resize with debounce
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+          clearTimeout(resizeTimeout);
+          resizeTimeout = setTimeout(adjustSize, 150);
+        });
       };
 
-      tryLoad();
+      iframe.addEventListener('load', handleIframeLoad);
 
-      // Handle resize with debounce
-      let resizeTimeout;
-      const handleResize = () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          const newHeight = isMobile() ? config.minHeight : config.defaultHeight;
-          iframe.style.height = `${newHeight}px`;
-        }, 150);
-      };
-
-      window.addEventListener('resize', handleResize);
-      
-      // Handle messages from iframe
+      // Handle messages from iframe for dynamic content
       window.addEventListener('message', (event) => {
         if (event.data.type === 'resize' && event.data.height) {
           const newHeight = Math.max(
             isMobile() ? config.minHeight : config.defaultHeight,
-            event.data.height
+            event.data.height + (config.padding * 2)
           );
           iframe.style.height = `${newHeight}px`;
+          container.style.height = `${newHeight}px`;
         }
       });
 
     } catch (error) {
       console.error('Error initializing calculator:', error);
-      loading.innerHTML = 'Error al inicializar la calculadora. Por favor, intente nuevamente.';
     }
   }
 
-  // Add mobile-specific styles
+  // Add integrated styles
   const style = document.createElement('style');
   style.textContent = `
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    #retirement-calculator {
+      transition: height 0.3s ease;
+    }
+    #retirement-calculator iframe {
+      transition: height 0.3s ease;
     }
     @media (max-width: ${config.mobileBreakpoint}px) {
       #retirement-calculator {
-        padding: 0.5rem;
+        padding: ${config.padding}px;
+        margin: 0;
+        border-radius: 0;
       }
       #retirement-calculator iframe {
         border-radius: 4px;
