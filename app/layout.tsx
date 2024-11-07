@@ -12,14 +12,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
-  const shouldInjectToolbar = process.env.NODE_ENV === 'development';
+}) {
+  const shouldInjectToolbar = process.env.NODE_ENV === 'development'
   
   return (
-    <html lang="es">
-      <body className={inter.className}>
+    <html lang="en">
+      <body>
         {children}
         {shouldInjectToolbar && <VercelToolbar />}
       </body>
