@@ -40,6 +40,7 @@ export function UserInputs({
             variant="outline" 
             size="icon"
             onClick={() => adjustMonthlyContribution(-500)}
+            aria-label="Disminuir aportación"
           >
             <MinusIcon className="h-4 w-4" />
           </Button>
@@ -49,11 +50,16 @@ export function UserInputs({
             value={monthlyContribution}
             onChange={(e) => handleMonthlyContributionChange(e.target.value)}
             className="text-center text-lg font-medium"
+            min={1000}
+            max={20000}
+            step={500}
+            aria-label="Aportación mensual"
           />
           <Button 
             variant="outline" 
             size="icon"
             onClick={() => adjustMonthlyContribution(500)}
+            aria-label="Aumentar aportación"
           >
             <PlusIcon className="h-4 w-4" />
           </Button>
@@ -65,6 +71,7 @@ export function UserInputs({
           step={500}
           onValueChange={(value) => setMonthlyContribution(value[0])}
           className="mt-2"
+          aria-label="Ajustar aportación mensual"
         />
         <p className="text-sm text-muted-foreground text-center">
           {formatCurrency(monthlyContribution)} mensuales
@@ -80,6 +87,7 @@ export function UserInputs({
             variant="outline" 
             size="icon"
             onClick={() => setViewerAge(Math.max(20, viewerAge - 1))}
+            aria-label="Disminuir edad"
           >
             <MinusIcon className="h-4 w-4" />
           </Button>
@@ -94,11 +102,15 @@ export function UserInputs({
               }
             }}
             className="text-center text-lg font-medium"
+            min={20}
+            max={65}
+            aria-label="Edad actual"
           />
           <Button 
             variant="outline" 
             size="icon"
             onClick={() => setViewerAge(Math.min(65, viewerAge + 1))}
+            aria-label="Aumentar edad"
           >
             <PlusIcon className="h-4 w-4" />
           </Button>
@@ -109,6 +121,7 @@ export function UserInputs({
           max={65}
           onValueChange={(value) => setViewerAge(value[0])}
           className="mt-2"
+          aria-label="Ajustar edad actual"
         />
         <p className="text-sm text-muted-foreground text-center">
           {viewerAge} años
