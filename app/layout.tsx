@@ -18,7 +18,7 @@ export default function RootLayout({
   const shouldInjectToolbar = process.env.NODE_ENV === 'development'
   
   return (
-    <html lang="en">
+    <html lang="en" className={inter.className}>
       <body>
         {children}
         {shouldInjectToolbar && <VercelToolbar />}

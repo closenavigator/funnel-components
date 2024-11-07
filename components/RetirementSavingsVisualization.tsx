@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,7 +9,6 @@ import { Label as UILabel } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
 import { PlusIcon, MinusIcon } from "@radix-ui/react-icons"
-import { debounce } from 'lodash'
 
 interface Person {
   name: string
@@ -57,13 +56,25 @@ const AnimatedAvatar: React.FC<{ person: Person; isSelected: boolean; onClick: (
   </motion.div>
 )
 
-const CustomTooltip: React.FC<{ active?: boolean; payload?: any[]; label?: string }> = ({ active, payload, label }) => {
+interface TooltipPayload {
+  color: string;
+  name: string;
+  value: number;
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: TooltipPayload[];
+  label?: string;
+}
+
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200">
         <p className="font-semibold text-gray-800 mb-2">Edad: {label}</p>
-        {payload.map((entry, index) => (
-          <div key={index} className="flex items-center mb-1">
+        {payload.map((entry) => (
+          <div key={entry.name} className="flex items-center mb-1">
             <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: entry.color }}></div>
             <p className="text-sm text-gray-600">
               <span className="font-medium">{entry.name}:</span>{' '}

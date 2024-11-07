@@ -1,7 +1,12 @@
 (function() {
+  // Get current script URL to determine domain
+  const currentScript = document.currentScript;
+  const scriptUrl = new URL(currentScript.src);
+  const domain = scriptUrl.hostname;
+
   // Create iframe
   const iframe = document.createElement('iframe');
-  iframe.src = 'https://your-vercel-domain.vercel.app/retirement1';
+  iframe.src = `https://${domain}/retirement1`;
   iframe.style.width = '100%';
   iframe.style.height = '800px';
   iframe.style.border = 'none';
