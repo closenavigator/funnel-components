@@ -1,74 +1,49 @@
-interface SavingsParams {
-  monthlyContribution: number
-  startAge: number
-  years: number
-  annualReturn: number
-  inflationRate: number
-  salaryGrowthRate: number
-  retirementAge: number
+import { RetirementInputs, RetirementResults } from '@/types/retirement'
+
+const PARAMS = {
+  annualReturn: 0.08,        // 8% average market return (conservative)
+  inflationRate: 0.03,       // 3% inflation
+  salaryGrowthRate: 0.03,    // 3% annual salary increase
+  retirementAge: 65,         // Standard retirement age
+  lifeExpectancy: 90,        // Conservative life expectancy
+  withdrawalRate: 0.04       // 4% safe withdrawal rate
 }
 
-const DEFAULT_PARAMS = {
-  annualReturn: 0.08,
-  inflationRate: 0.03,
-  salaryGrowthRate: 0.03,
-  retirementAge: 65
-}
+export function calculateRetirement(inputs: RetirementInputs): RetirementResults {
+  const { age, monthlyContribution, currentSavings } = inputs
+  const yearsToRetirement = PARAMS.retirementAge - age
+  const yearsInRetirement = PARAMS.lifeExpectancy - PARAMS.retirementAge
 
-export const calculateSavingsOverTime = (
-  monthlyContribution: number,
-  startAge: number,
-  years: number,
-  customParams?: Partial<SavingsParams>
-): { age: number; total: number; realTotal: number }[] => {
-  const params = { ...DEFAULT_PARAMS, ...customParams }
-  const {
-    annualReturn,
-    inflationRate,
-    salaryGrowthRate,
-    retirementAge
-  } = params
+  // Calculate real return rates (adjusted for inflation)
+  const realReturn = (1 + PARAMS.annualReturn) / (1 + PARAMS.inflationRate) - 1
+  const realSalaryGrowth = (1 + PARAMS.salaryGrowthRate) / (1 + PARAMS.inflationRate) - 1
 
-  const realReturn = (1 + annualReturn) / (1 + inflationRate) - 1
-  const realSalaryGrowth = (1 + salaryGrowthRate) / (1 + inflationRate) - 1
-
-  let total = 0
-  let realTotal = 0
+  // Calculate accumulation phase
+  let total = currentSavings
   let annualContribution = monthlyContribution * 12
-  const data = []
 
-  for (let i = 0; i <= years; i++) {
-    const currentAge = startAge + i
-    
-    data.push({
-      age: currentAge,
-      total: Math.round(total),
-      realTotal: Math.round(realTotal)
-    })
-
-    if (currentAge < retirementAge) {
-      total = (total + annualContribution) * (1 + annualReturn)
-      realTotal = (realTotal + annualContribution) * (1 + realReturn)
-      
-      annualContribution *= (1 + salaryGrowthRate)
-    } else {
-      total *= (1 + annualReturn * 0.7)
-      realTotal *= (1 + realReturn * 0.7)
-    }
+  for (let year = 1; year <= yearsToRetirement; year++) {
+    total = (total + annualContribution) * (1 + realReturn)
+    annualContribution *= (1 + realSalaryGrowth)
   }
 
-  return data
-}
+  const totalAtRetirement = total
 
-export const calculateRetirementNeeds = (
-  currentAge: number,
-  monthlyExpenses: number,
-  desiredRetirementAge: number = 65,
-  lifeExpectancy: number = 90
-): number => {
-  const yearsInRetirement = lifeExpectancy - desiredRetirementAge
-  const annualExpenses = monthlyExpenses * 12
-  const inflationAdjustedExpenses = annualExpenses * Math.pow(1 + DEFAULT_PARAMS.inflationRate, desiredRetirementAge - currentAge)
-  
-  return inflationAdjustedExpenses * 25
+  // Calculate sustainable monthly income in retirement
+  const monthlyRetirementIncome = (totalAtRetirement * PARAMS.withdrawalRate) / 12
+
+  // Calculate how many years this income could last
+  let retirementSavings = totalAtRetirement
+  let yearsOfRetirement = 0
+
+  while (retirementSavings > 0 && yearsOfRetirement < 50) {
+    retirementSavings = (retirementSavings - (monthlyRetirementIncome * 12)) * (1 + realReturn)
+    yearsOfRetirement++
+  }
+
+  return {
+    totalAtRetirement,
+    monthlyRetirementIncome,
+    yearsOfRetirement: Math.min(yearsOfRetirement, yearsInRetirement)
+  }
 } 

@@ -1,11 +1,11 @@
-export interface Person {
-  name: string
-  startAge: number
-  color: string
-  avatar: string
+export interface RetirementInputs {
+  age: number
+  monthlyContribution: number
+  currentSavings: number
 }
 
-export interface SavingsData {
-  age: number
-  [key: string]: number
+export interface RetirementResults {
+  totalAtRetirement: number
+  monthlyRetirementIncome: number
+  yearsOfRetirement: number
 } 
