@@ -17,30 +17,18 @@ export default function RetirementSavingsVisualization() {
   const people: Person[] = useMemo(() => [
     { name: "Tú", startAge: viewerAge, color: "#4F46E5", avatar: "👤" },
     { name: "María", startAge: 25, color: "#EC4899", avatar: "👩" },
-    { name: "Carlos", startAge: 35, color: "#10B981", avatar: "👨" },
     { name: "Ana", startAge: 45, color: "#F59E0B", avatar: "👩‍🦰" }
   ], [viewerAge])
 
   const retirementData = useMemo(() => {
-    const maxAge = 90
-    const data: SavingsData[] = []
-    const uniqueAges = new Set(people.map(p => p.startAge))
-    
-    uniqueAges.forEach(startAge => {
-      const personData = calculateSavingsOverTime(monthlyContribution, startAge, maxAge - startAge)
-      personData.forEach((d, i) => {
-        const age = startAge + i
-        if (!data[i]) {
-          data[i] = { age }
-        }
-        const relevantPeople = people.filter(p => p.startAge === startAge)
-        relevantPeople.forEach(person => {
-          data[i][person.name] = d.total
-        })
-      })
-    })
-    
-    return data
+    return people.map(person => ({
+      ...person,
+      savings: calculateSavingsOverTime(
+        monthlyContribution,
+        person.startAge,
+        90 - person.startAge
+      )
+    }))
   }, [people, monthlyContribution])
 
   return (
