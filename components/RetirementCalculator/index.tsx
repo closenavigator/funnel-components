@@ -7,70 +7,84 @@ import { StepOne } from './StepOne'
 import { StepTwo } from './StepTwo'
 import { Results } from './Results'
 import { calculateRetirement } from '@/lib/calculations'
+import { motion, AnimatePresence } from 'framer-motion'
 
-export default function RetirementCalculator() {
+export function RetirementCalculator() {
   const [step, setStep] = useState(1)
   const [inputs, setInputs] = useState<RetirementInputs>({
     age: 30,
     monthlyContribution: 5000,
-    currentSavings: 0
+    currentSavings: 0,
   })
   const [results, setResults] = useState<RetirementResults | null>(null)
 
-  const handleNext = () => {
-    if (step === 2) {
-      const calculatedResults = calculateRetirement(inputs)
-      setResults(calculatedResults)
-    }
-    setStep(prev => Math.min(3, prev + 1))
-  }
-
-  const handleBack = () => {
-    setStep(prev => Math.max(1, prev - 1))
-  }
-
-  const updateInputs = (newInputs: Partial<RetirementInputs>) => {
-    setInputs(prev => ({ ...prev, ...newInputs }))
+  const handleCalculate = () => {
+    const calculatedResults = calculateRetirement(inputs)
+    setResults(calculatedResults)
+    setStep(3)
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="text-2xl text-center">
+    <Card className="w-full max-w-lg mx-auto bg-white/50 backdrop-blur-sm shadow-xl border-muted">
+      <CardHeader className="text-center space-y-2">
+        <CardTitle className="text-2xl font-bold bg-gradient-to-br from-primary to-primary/60 bg-clip-text text-transparent">
           Calculadora de Retiro
         </CardTitle>
-        <CardDescription className="text-center">
-          {step === 1 && "Paso 1: Información Personal"}
-          {step === 2 && "Paso 2: Aportaciones"}
-          {step === 3 && "Resultados"}
+        <CardDescription className="text-base">
+          Planifica tu futuro financiero de manera inteligente
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        {step === 1 && (
-          <StepOne 
-            age={inputs.age}
-            onUpdate={updateInputs}
-            onNext={handleNext}
-          />
-        )}
-        
-        {step === 2 && (
-          <StepTwo
-            monthlyContribution={inputs.monthlyContribution}
-            currentSavings={inputs.currentSavings}
-            onUpdate={updateInputs}
-            onNext={handleNext}
-            onBack={handleBack}
-          />
-        )}
-        
-        {step === 3 && results && (
-          <Results
-            results={results}
-            inputs={inputs}
-            onBack={handleBack}
-          />
-        )}
+      <CardContent className="p-6">
+        <AnimatePresence mode="wait">
+          {step === 1 && (
+            <motion.div
+              key="step1"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <StepOne
+                age={inputs.age}
+                onUpdate={(values) => setInputs(prev => ({ ...prev, ...values }))}
+                onNext={() => setStep(2)}
+              />
+            </motion.div>
+          )}
+          {step === 2 && (
+            <motion.div
+              key="step2"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <StepTwo
+                monthlyContribution={inputs.monthlyContribution}
+                currentSavings={inputs.currentSavings}
+                desiredMonthlyIncome={inputs.desiredMonthlyIncome}
+                onUpdate={(values) => setInputs(prev => ({ ...prev, ...values }))}
+                onNext={handleCalculate}
+                onBack={() => setStep(1)}
+              />
+            </motion.div>
+          )}
+          {step === 3 && results && (
+            <motion.div
+              key="step3"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Results
+                results={results}
+                inputs={inputs}
+                onBack={() => setStep(2)}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </CardContent>
     </Card>
   )
