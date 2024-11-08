@@ -2,13 +2,15 @@ import { motion } from 'framer-motion'
 import { Person } from '@/types/retirement'
 import { formatCurrency } from '@/lib/format'
 
+interface RetirementData {
+  [key: string]: number
+  age: number
+}
+
 interface ImpactAnalysisProps {
   person: Person
   monthlyContribution: number
-  retirementData: Array<{
-    [key: string]: number
-    age: number
-  }>
+  retirementData: RetirementData[]
 }
 
 export function ImpactAnalysis({
@@ -16,7 +18,9 @@ export function ImpactAnalysis({
   monthlyContribution,
   retirementData
 }: ImpactAnalysisProps) {
-  const finalSavings = retirementData[retirementData.length - 1]?.[person.name] || 0
+  // Safely access the last element and handle potential undefined
+  const lastDataPoint = retirementData[retirementData.length - 1]
+  const finalSavings = lastDataPoint ? lastDataPoint[person.name] || 0 : 0
 
   return (
     <motion.div 
