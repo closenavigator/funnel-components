@@ -6,7 +6,8 @@ interface ImpactAnalysisProps {
   person: Person
   monthlyContribution: number
   retirementData: Array<{
-    savings: Array<{ age: number; total: number }>
+    [key: string]: number
+    age: number
   }>
 }
 
@@ -15,8 +16,7 @@ export function ImpactAnalysis({
   monthlyContribution,
   retirementData
 }: ImpactAnalysisProps) {
-  const personData = retirementData.find(data => data.name === person.name)
-  const finalSavings = personData?.savings[personData.savings.length - 1]?.total || 0
+  const finalSavings = retirementData[retirementData.length - 1]?.[person.name] || 0
 
   return (
     <motion.div 
