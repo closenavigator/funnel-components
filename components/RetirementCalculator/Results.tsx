@@ -12,10 +12,27 @@ interface ResultsProps {
   onBack: () => void
 }
 
+interface ChartDataPoint {
+  age: number
+  savings: number
+}
+
+interface TooltipPayload {
+  value: number
+  payload: ChartDataPoint
+  dataKey: string
+}
+
+interface CustomTooltipProps {
+  active?: boolean
+  payload?: TooltipPayload[]
+  label?: string
+}
+
 export function Results({ results, inputs, onBack }: ResultsProps) {
   const chartData = useMemo(() => {
     const years = 65 - inputs.age
-    const data = []
+    const data: ChartDataPoint[] = []
     let currentSavings = inputs.currentSavings
     const monthlyAmount = results.requiredMonthlyContribution || inputs.monthlyContribution
     
@@ -31,6 +48,18 @@ export function Results({ results, inputs, onBack }: ResultsProps) {
     }
     return data
   }, [inputs, results])
+
+  const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+    if (active && payload && payload.length > 0 && payload[0].value !== undefined) {
+      return (
+        <div className="bg-background/95 backdrop-blur-sm p-3 rounded-lg shadow-lg border">
+          <p className="font-medium">Edad: {label} años</p>
+          <p className="text-primary">{formatCurrency(payload[0].value)}</p>
+        </div>
+      )
+    }
+    return null
+  }
 
   return (
     <div className="space-y-6">
@@ -97,19 +126,7 @@ export function Results({ results, inputs, onBack }: ResultsProps) {
               tick={{ fontSize: 12 }}
               tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
             />
-            <Tooltip
-              content={({ active, payload, label }) => {
-                if (active && payload && payload.length) {
-                  return (
-                    <div className="bg-background/95 backdrop-blur-sm p-3 rounded-lg shadow-lg border">
-                      <p className="font-medium">Edad: {label} años</p>
-                      <p className="text-primary">{formatCurrency(payload[0].value)}</p>
-                    </div>
-                  )
-                }
-                return null
-              }}
-            />
+            <Tooltip content={CustomTooltip} />
             <Line
               type="monotone"
               dataKey="savings"
