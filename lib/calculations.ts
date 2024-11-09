@@ -5,6 +5,35 @@ const INFLATION_RATE = 0.04 // 4% annual inflation
 const RETIREMENT_AGE = 65
 const LIFE_EXPECTANCY = 85
 
+export function calculateSavingsOverTime(
+  monthlyContribution: number, 
+  startAge: number, 
+  years: number
+) {
+  let total = 0
+  let annualContribution = monthlyContribution * 12
+  const data = []
+
+  for (let i = 0; i <= years; i++) {
+    const age = startAge + i
+    data.push({
+      age,
+      [age < RETIREMENT_AGE ? 'savings' : 'retirement']: Math.round(total)
+    })
+
+    if (age < RETIREMENT_AGE) {
+      // Accumulation phase
+      total = (total + annualContribution) * (1 + ANNUAL_RETURN)
+      annualContribution *= (1 + INFLATION_RATE) // Increase contributions with inflation
+    } else {
+      // Retirement phase
+      total *= (1 + ANNUAL_RETURN - INFLATION_RATE) // Real return during retirement
+    }
+  }
+
+  return data
+}
+
 export function calculateRetirement(inputs: RetirementInputs): RetirementResults {
   const { age, monthlyContribution, currentSavings, desiredMonthlyIncome } = inputs
   const yearsUntilRetirement = RETIREMENT_AGE - age
