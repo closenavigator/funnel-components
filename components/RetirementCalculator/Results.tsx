@@ -2,9 +2,10 @@ import { Button } from "@/components/ui/button"
 import { RetirementInputs, RetirementResults } from "@/types/retirement"
 import { formatCurrency } from "@/lib/format"
 import { motion } from 'framer-motion'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts'
 import { ArrowLeft, TrendingUp, Wallet, Clock } from 'lucide-react'
 import { useMemo } from 'react'
+import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
 
 interface ResultsProps {
   results: RetirementResults
@@ -17,16 +18,21 @@ interface ChartDataPoint {
   savings: number
 }
 
-interface TooltipPayload {
-  value: number
-  payload: ChartDataPoint
-  dataKey: string
-}
-
-interface CustomTooltipProps {
-  active?: boolean
-  payload?: TooltipPayload[]
-  label?: string
+const CustomTooltip = ({ 
+  active, 
+  payload, 
+  label 
+}: TooltipProps<ValueType, NameType>) => {
+  if (active && payload && payload.length > 0) {
+    const value = payload[0].value as number
+    return (
+      <div className="bg-background/95 backdrop-blur-sm p-3 rounded-lg shadow-lg border">
+        <p className="font-medium">Edad: {label} años</p>
+        <p className="text-primary">{formatCurrency(value)}</p>
+      </div>
+    )
+  }
+  return null
 }
 
 export function Results({ results, inputs, onBack }: ResultsProps) {
@@ -48,18 +54,6 @@ export function Results({ results, inputs, onBack }: ResultsProps) {
     }
     return data
   }, [inputs, results])
-
-  const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
-    if (active && payload && payload.length > 0 && payload[0].value !== undefined) {
-      return (
-        <div className="bg-background/95 backdrop-blur-sm p-3 rounded-lg shadow-lg border">
-          <p className="font-medium">Edad: {label} años</p>
-          <p className="text-primary">{formatCurrency(payload[0].value)}</p>
-        </div>
-      )
-    }
-    return null
-  }
 
   return (
     <div className="space-y-6">
