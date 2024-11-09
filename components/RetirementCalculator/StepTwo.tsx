@@ -34,9 +34,23 @@ export function StepTwo({
   const handleDesiredIncomeChange = (value: number) => {
     onUpdate({ 
       desiredMonthlyIncome: value,
-      // Reset monthly contribution when switching to desired income mode
-      monthlyContribution: undefined 
+      monthlyContribution: undefined
     })
+  }
+
+  const handleSwitchChange = (checked: boolean) => {
+    setShowDesiredIncome(checked)
+    if (checked) {
+      onUpdate({ 
+        desiredMonthlyIncome: 20000,
+        monthlyContribution: undefined 
+      })
+    } else {
+      onUpdate({ 
+        desiredMonthlyIncome: undefined,
+        monthlyContribution: 5000 
+      })
+    }
   }
 
   return (
@@ -47,13 +61,15 @@ export function StepTwo({
             Calcular aportación necesaria
           </Label>
           <p className="text-sm text-muted-foreground">
-            Calcula cuánto necesitas ahorrar mensualmente para alcanzar tu ingreso deseado
+            {showDesiredIncome 
+              ? "Define tu ingreso mensual deseado al retirarte" 
+              : "Define tu aportación mensual actual"}
           </p>
         </div>
         <Switch
           id="reverse-calc"
           checked={showDesiredIncome}
-          onCheckedChange={setShowDesiredIncome}
+          onCheckedChange={handleSwitchChange}
         />
       </div>
 
@@ -66,7 +82,12 @@ export function StepTwo({
             exit={{ opacity: 0, y: -20 }}
             className="space-y-4"
           >
-            <Label htmlFor="desiredIncome">Ingreso mensual deseado al retirarte</Label>
+            <Label htmlFor="desiredIncome">
+              Ingreso mensual deseado al retirarte
+              <span className="text-xs text-muted-foreground ml-2">
+                (en pesos actuales)
+              </span>
+            </Label>
             <div className="space-y-4">
               <Input
                 id="desiredIncome"
@@ -86,6 +107,9 @@ export function StepTwo({
               />
               <p className="text-sm text-muted-foreground text-center">
                 {formatCurrency(desiredMonthlyIncome)} mensuales al retirarte
+                <span className="block text-xs mt-1">
+                  (ajustado por inflación)
+                </span>
               </p>
             </div>
           </motion.div>

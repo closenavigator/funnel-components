@@ -17,11 +17,12 @@ export function Results({ results, inputs, onBack }: ResultsProps) {
     const years = 65 - inputs.age
     const data = []
     let currentSavings = inputs.currentSavings
+    const monthlyAmount = results.requiredMonthlyContribution || inputs.monthlyContribution
     
     for (let i = 0; i <= years; i++) {
       const age = inputs.age + i
       currentSavings = i === 0 ? inputs.currentSavings : 
-        currentSavings * 1.08 + (inputs.monthlyContribution * 12)
+        currentSavings * 1.08 + (monthlyAmount * 12)
       
       data.push({
         age,
@@ -29,7 +30,7 @@ export function Results({ results, inputs, onBack }: ResultsProps) {
       })
     }
     return data
-  }, [inputs])
+  }, [inputs, results])
 
   return (
     <div className="space-y-6">
@@ -128,9 +129,19 @@ export function Results({ results, inputs, onBack }: ResultsProps) {
       >
         <h4 className="font-medium mb-2">Resumen de tu plan</h4>
         <p className="text-muted-foreground">
-          Ahorrando {formatCurrency(inputs.monthlyContribution)} mensuales desde los {inputs.age} años,
-          podrás mantener un ingreso mensual de {formatCurrency(results.monthlyRetirementIncome)} durante
-          {results.yearsOfRetirement} años después de tu retiro.
+          {results.requiredMonthlyContribution ? (
+            <>
+              Para alcanzar un ingreso mensual de {formatCurrency(inputs.desiredMonthlyIncome || 0)} al retirarte,
+              necesitas ahorrar {formatCurrency(results.requiredMonthlyContribution)} mensuales
+              desde los {inputs.age} años.
+            </>
+          ) : (
+            <>
+              Ahorrando {formatCurrency(inputs.monthlyContribution)} mensuales desde los {inputs.age} años,
+              podrás mantener un ingreso mensual de {formatCurrency(results.monthlyRetirementIncome)} durante
+              {' '}{results.yearsOfRetirement} años después de tu retiro.
+            </>
+          )}
         </p>
       </motion.div>
 

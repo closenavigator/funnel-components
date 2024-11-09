@@ -1,78 +1,62 @@
-import { RetirementInputs, RetirementResults, RETIREMENT_PARAMS } from '@/types/retirement'
+import { RetirementInputs, RetirementResults } from '@/types/retirement'
+
+const ANNUAL_RETURN = 0.08 // 8% annual return
+const INFLATION_RATE = 0.04 // 4% annual inflation
+const RETIREMENT_AGE = 65
+const LIFE_EXPECTANCY = 85
 
 export function calculateRetirement(inputs: RetirementInputs): RetirementResults {
-  const { age, monthlyContribution, currentSavings } = inputs
-  const {
-    annualReturn,
-    inflationRate,
-    retirementAge,
-    lifeExpectancy,
-    withdrawalRate
-  } = RETIREMENT_PARAMS
+  const { age, monthlyContribution, currentSavings, desiredMonthlyIncome } = inputs
+  const yearsUntilRetirement = RETIREMENT_AGE - age
+  const yearsOfRetirement = LIFE_EXPECTANCY - RETIREMENT_AGE
 
-  // Calculate real return (adjusted for inflation)
-  const realReturn = (1 + annualReturn) / (1 + inflationRate) - 1
+  if (desiredMonthlyIncome !== undefined) {
+    // Reverse calculation mode
+    // Calculate total needed considering inflation
+    const inflatedMonthlyIncome = desiredMonthlyIncome * 
+      Math.pow(1 + INFLATION_RATE, yearsUntilRetirement)
+    const annualIncomeNeeded = inflatedMonthlyIncome * 12
+    
+    // Calculate total nest egg needed at retirement
+    const totalNeeded = annualIncomeNeeded * 
+      ((1 - Math.pow(1 + ANNUAL_RETURN - INFLATION_RATE, -yearsOfRetirement)) / 
+      (ANNUAL_RETURN - INFLATION_RATE))
 
-  // Calculate accumulation phase
-  let total = currentSavings
-  let annualContribution = monthlyContribution * 12
-  const yearsToRetirement = retirementAge - age
+    // Calculate future value of current savings
+    const currentSavingsFV = currentSavings * 
+      Math.pow(1 + ANNUAL_RETURN, yearsUntilRetirement)
 
-  for (let year = 1; year <= yearsToRetirement; year++) {
-    // Add annual contribution and calculate returns
-    total = (total + annualContribution) * (1 + realReturn)
+    // Calculate required monthly contribution
+    const additionalNeeded = totalNeeded - currentSavingsFV
+    const monthlyPaymentNeeded = (additionalNeeded * (ANNUAL_RETURN / 12)) / 
+      (Math.pow(1 + ANNUAL_RETURN / 12, yearsUntilRetirement * 12) - 1)
+
+    return {
+      totalAtRetirement: Math.round(totalNeeded),
+      monthlyRetirementIncome: Math.round(inflatedMonthlyIncome),
+      yearsOfRetirement,
+      requiredMonthlyContribution: Math.round(Math.max(1000, monthlyPaymentNeeded))
+    }
   }
 
-  const totalAtRetirement = total
-
-  // Calculate sustainable monthly income using the 4% rule
-  // Adjusted for inflation and conservative withdrawal
-  const monthlyRetirementIncome = (totalAtRetirement * withdrawalRate) / 12
-
-  // Calculate how many years this income could last
-  let retirementSavings = totalAtRetirement
-  let yearsOfRetirement = 0
-  const targetYears = lifeExpectancy - retirementAge
-
-  while (retirementSavings > 0 && yearsOfRetirement < targetYears) {
-    retirementSavings = (retirementSavings - (monthlyRetirementIncome * 12)) * (1 + realReturn)
-    yearsOfRetirement++
+  // Forward calculation mode
+  let futureValue = currentSavings
+  let monthlyPayment = monthlyContribution
+  
+  // Calculate accumulation phase with increasing contributions
+  for (let i = 0; i < yearsUntilRetirement * 12; i++) {
+    futureValue = (futureValue + monthlyPayment) * (1 + ANNUAL_RETURN / 12)
+    monthlyPayment *= (1 + INFLATION_RATE / 12) // Increase contributions with inflation
   }
+
+  // Calculate sustainable monthly withdrawal
+  const sustainableMonthlyIncome = (futureValue * (ANNUAL_RETURN - INFLATION_RATE) / 12) / 
+    (1 - Math.pow(1 + ANNUAL_RETURN - INFLATION_RATE, -yearsOfRetirement))
 
   return {
-    totalAtRetirement,
-    monthlyRetirementIncome,
-    yearsOfRetirement: Math.min(yearsOfRetirement, targetYears)
+    totalAtRetirement: Math.round(futureValue),
+    monthlyRetirementIncome: Math.round(sustainableMonthlyIncome),
+    yearsOfRetirement,
+    requiredMonthlyContribution: undefined
   }
-}
-
-// Helper function to calculate required savings for desired retirement income
-export function calculateRequiredSavings(
-  desiredMonthlyIncome: number,
-  yearsToRetirement: number,
-  currentSavings: number = 0
-): number {
-  const { annualReturn, inflationRate, withdrawalRate } = RETIREMENT_PARAMS
-  
-  // Adjust desired income for inflation
-  const inflationAdjustedIncome = desiredMonthlyIncome * 
-    Math.pow(1 + inflationRate, yearsToRetirement)
-  
-  // Calculate required total using 4% rule
-  const requiredTotal = (inflationAdjustedIncome * 12) / withdrawalRate
-  
-  // Calculate required monthly savings
-  const realReturn = (1 + annualReturn) / (1 + inflationRate) - 1
-  const monthlyRate = realReturn / 12
-  
-  const futureValueOfCurrent = currentSavings * 
-    Math.pow(1 + realReturn, yearsToRetirement)
-  
-  const additionalNeeded = requiredTotal - futureValueOfCurrent
-  
-  // Using PMT formula
-  const monthlyContribution = (additionalNeeded * monthlyRate) / 
-    (Math.pow(1 + monthlyRate, yearsToRetirement * 12) - 1)
-  
-  return Math.max(RETIREMENT_PARAMS.minContribution, Math.ceil(monthlyContribution))
 } 
