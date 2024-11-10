@@ -2,6 +2,7 @@ import { RetirementInputs, RetirementResults } from '@/types/retirement'
 
 const ANNUAL_RETURN = 0.08 // 8% annual return
 const INFLATION_RATE = 0.04 // 4% annual inflation
+const SAFE_WITHDRAWAL_RATE = 0.04 // 4% safe withdrawal rate
 const RETIREMENT_AGE = 65
 const LIFE_EXPECTANCY = 85
 
@@ -40,47 +41,50 @@ export function calculateRetirement(inputs: RetirementInputs): RetirementResults
   const yearsOfRetirement = LIFE_EXPECTANCY - RETIREMENT_AGE
 
   if (desiredMonthlyIncome !== undefined) {
-    // Reverse calculation mode
-    // Calculate total needed considering inflation
-    const inflatedMonthlyIncome = desiredMonthlyIncome * 
-      Math.pow(1 + INFLATION_RATE, yearsUntilRetirement)
-    const annualIncomeNeeded = inflatedMonthlyIncome * 12
+    // Reverse calculation mode - "¿Cuánto necesito ahorrar?"
     
-    // Calculate total nest egg needed at retirement
-    const totalNeeded = annualIncomeNeeded * 
-      ((1 - Math.pow(1 + ANNUAL_RETURN - INFLATION_RATE, -yearsOfRetirement)) / 
-      (ANNUAL_RETURN - INFLATION_RATE))
-
-    // Calculate future value of current savings
-    const currentSavingsFV = currentSavings * 
+    // 1. Calculate how much total savings needed at retirement
+    const annualIncomeNeeded = desiredMonthlyIncome * 12
+    const totalNeededAtRetirement = annualIncomeNeeded / SAFE_WITHDRAWAL_RATE
+    
+    // 2. Account for inflation
+    const inflationAdjustedTarget = totalNeededAtRetirement * 
+      Math.pow(1 + INFLATION_RATE, yearsUntilRetirement)
+    
+    // 3. Calculate future value of current savings
+    const futureValueOfCurrentSavings = currentSavings * 
       Math.pow(1 + ANNUAL_RETURN, yearsUntilRetirement)
-
-    // Calculate required monthly contribution
-    const additionalNeeded = totalNeeded - currentSavingsFV
-    const monthlyPaymentNeeded = (additionalNeeded * (ANNUAL_RETURN / 12)) / 
-      (Math.pow(1 + ANNUAL_RETURN / 12, yearsUntilRetirement * 12) - 1)
+    
+    // 4. Calculate additional savings needed
+    const additionalSavingsNeeded = inflationAdjustedTarget - futureValueOfCurrentSavings
+    
+    // 5. Calculate required monthly contribution using PMT formula
+    const monthlyRate = ANNUAL_RETURN / 12
+    const numberOfPayments = yearsUntilRetirement * 12
+    
+    const requiredMonthlyContribution = (additionalSavingsNeeded * monthlyRate) / 
+      (Math.pow(1 + monthlyRate, numberOfPayments) - 1)
 
     return {
-      totalAtRetirement: Math.round(totalNeeded),
-      monthlyRetirementIncome: Math.round(inflatedMonthlyIncome),
+      totalAtRetirement: Math.round(inflationAdjustedTarget),
+      monthlyRetirementIncome: Math.round(desiredMonthlyIncome),
       yearsOfRetirement,
-      requiredMonthlyContribution: Math.round(Math.max(1000, monthlyPaymentNeeded))
+      requiredMonthlyContribution: Math.max(1000, Math.round(requiredMonthlyContribution))
     }
   }
 
-  // Forward calculation mode
+  // Forward calculation mode - "¿Cuánto tendré?"
   let futureValue = currentSavings
   let monthlyPayment = monthlyContribution
   
-  // Calculate accumulation phase with increasing contributions
+  // Calculate accumulation phase
   for (let i = 0; i < yearsUntilRetirement * 12; i++) {
     futureValue = (futureValue + monthlyPayment) * (1 + ANNUAL_RETURN / 12)
     monthlyPayment *= (1 + INFLATION_RATE / 12) // Increase contributions with inflation
   }
 
-  // Calculate sustainable monthly withdrawal
-  const sustainableMonthlyIncome = (futureValue * (ANNUAL_RETURN - INFLATION_RATE) / 12) / 
-    (1 - Math.pow(1 + ANNUAL_RETURN - INFLATION_RATE, -yearsOfRetirement))
+  // Calculate sustainable monthly withdrawal using the 4% rule
+  const sustainableMonthlyIncome = (futureValue * SAFE_WITHDRAWAL_RATE) / 12
 
   return {
     totalAtRetirement: Math.round(futureValue),
