@@ -8,9 +8,20 @@ interface RetirementData {
 }
 
 interface ImpactAnalysisProps {
-  person: Person
+  person: {
+    name: string
+    startAge: number
+    color: string
+    avatar: string
+  }
   monthlyContribution: number
-  retirementData: RetirementData[]
+  retirementData: Array<{
+    age: number
+    total: number
+    monthlyIncome: number
+    yearsSaving: number
+    [key: string]: number
+  }>
 }
 
 export function ImpactAnalysis({
