@@ -1,39 +1,3 @@
-// Types for the step-by-step calculator
-export interface RetirementInputs {
-  age: number
-  monthlyContribution: number
-  currentSavings: number
-  desiredMonthlyIncome?: number  // Optional for reverse calculation
-}
-
-export interface RetirementResults {
-  totalAtRetirement: number
-  monthlyRetirementIncome: number
-  yearsOfRetirement: number
-  requiredMonthlyContribution?: number  // For reverse calculation
-}
-
-// Types for the visualization calculator
-export interface SavingsDataPoint {
-  age: number
-  total: number
-  monthlyIncome: number
-  yearsSaving: number
-  [key: string]: number
-}
-
-export interface Person {
-  name: string
-  startAge: number
-  color: string
-  avatar: string
-  savings: SavingsDataPoint[]
-}
-
-export interface RetirementData extends SavingsDataPoint {
-  [key: string]: number
-}
-
 // Shared calculation parameters
 export const RETIREMENT_PARAMS = {
   annualReturn: 0.08,        // 8% average market return (conservative)
