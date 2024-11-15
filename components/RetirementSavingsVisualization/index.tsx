@@ -14,13 +14,13 @@ const RetirementSavingsVisualization = () => {
   const [viewerAge, setViewerAge] = useState(30)
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
 
-  const retirementData = useMemo(() => {
-    const people = [
-      { name: "Tú", startAge: viewerAge, color: "#60A5FA", avatar: "👤" },
-      { name: "Ana", startAge: 25, color: "#34D399", avatar: "👩" },
-      { name: "Carlos", startAge: 35, color: "#F87171", avatar: "👨" }
-    ]
+  const people = [
+    { name: "Tú", startAge: viewerAge, color: "#60A5FA", avatar: "👤" },
+    { name: "Ana", startAge: 25, color: "#34D399", avatar: "👩" },
+    { name: "Carlos", startAge: 35, color: "#F87171", avatar: "👨" }
+  ]
 
+  const retirementData = useMemo(() => {
     return people.map(person => {
       const savings = calculateSavingsOverTime(monthlyContribution, person.startAge, 40) as SavingsDataPoint[]
       return {
@@ -28,7 +28,7 @@ const RetirementSavingsVisualization = () => {
         savings
       }
     })
-  }, [viewerAge, monthlyContribution]) as Person[]
+  }, [viewerAge, monthlyContribution, people]) as Person[]
 
   return (
     <Card className="w-full max-w-7xl mx-auto">
@@ -53,6 +53,7 @@ const RetirementSavingsVisualization = () => {
         <SavingsChart
           data={retirementData}
           selectedPerson={selectedPerson}
+          people={people}
         />
         {selectedPerson && (
           <ImpactAnalysis

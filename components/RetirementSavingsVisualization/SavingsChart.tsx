@@ -3,8 +3,7 @@ import { Person } from '@/types/retirement'
 import { formatCurrency } from '@/lib/format'
 
 interface SavingsChartProps {
-  data: any[]
-  people: Person[]
+  data: Person[]
   selectedPerson: Person | null
 }
 
@@ -41,7 +40,7 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
   return null
 }
 
-export function SavingsChart({ data, people, selectedPerson }: SavingsChartProps) {
+export function SavingsChart({ data, selectedPerson }: SavingsChartProps) {
   return (
     <div className="h-[400px] bg-gradient-to-br from-background to-muted rounded-lg p-4 border shadow-inner">
       <ResponsiveContainer width="100%" height="100%">
@@ -57,7 +56,7 @@ export function SavingsChart({ data, people, selectedPerson }: SavingsChartProps
             className="text-muted-foreground"
           />
           <Tooltip content={<CustomTooltip />} />
-          {people.map((person) => (
+          {data.map((person) => (
             <Area
               key={person.name}
               type="monotone"
