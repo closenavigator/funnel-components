@@ -1,13 +1,14 @@
 "use client"
 
 import React, { useState, useMemo } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { UserInputs } from './UserInputs'
 import { ProfileComparison } from './ProfileComparison'
 import { SavingsChart } from './SavingsChart'
 import { ImpactAnalysis } from './ImpactAnalysis'
 import { calculateSavingsOverTime } from '@/lib/calculations'
-import { Person, RetirementData, SavingsDataPoint } from '@/types/retirement'
+import { Person } from '@/types/retirement'
 
 const RetirementSavingsVisualization = () => {
   const [monthlyContribution, setMonthlyContribution] = useState(5000)
@@ -21,14 +22,11 @@ const RetirementSavingsVisualization = () => {
       { name: "Carlos", startAge: 35, color: "#F87171", avatar: "👨" }
     ]
 
-    return people.map(person => {
-      const savings = calculateSavingsOverTime(monthlyContribution, person.startAge, 40)
-      return {
-        ...person,
-        savings
-      }
-    })
-  }, [monthlyContribution, viewerAge]) as Person[]
+    return people.map(person => ({
+      ...person,
+      savings: calculateSavingsOverTime(monthlyContribution, person.startAge, 40)
+    }))
+  }, [monthlyContribution, viewerAge])
 
   return (
     <Card className="w-full max-w-7xl mx-auto">
@@ -58,13 +56,7 @@ const RetirementSavingsVisualization = () => {
           <ImpactAnalysis
             person={selectedPerson}
             monthlyContribution={monthlyContribution}
-            retirementData={retirementData.map(person => ({
-              age: person.savings[0].age,
-              total: person.savings[0].total,
-              monthlyIncome: person.savings[0].monthlyIncome,
-              yearsSaving: person.savings[0].yearsSaving,
-              [person.name]: person.savings[0].total
-            }))}
+            retirementData={retirementData}
           />
         )}
       </CardContent>

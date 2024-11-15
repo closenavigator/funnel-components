@@ -42,4 +42,28 @@ export function calculateRetirement(inputs: RetirementInputs): RetirementResults
     monthlyRetirementIncome: (totalAtRetirement * SAFE_WITHDRAWAL_RATE) / 12,
     yearsOfRetirement
   }
+}
+
+export function calculateSavingsOverTime(monthlyContribution: number, startAge: number, years: number): RetirementDataPoint[] {
+  let total = 0
+  let annualContribution = monthlyContribution * 12
+  const data: RetirementDataPoint[] = []
+  
+  for (let i = 0; i <= years; i++) {
+    data.push({
+      age: startAge + i,
+      total: Math.round(total),
+      monthlyIncome: (total * RETIREMENT_PARAMS.withdrawalRate) / 12,
+      yearsSaving: i
+    })
+    
+    if (startAge + i < RETIREMENT_PARAMS.retirementAge) {
+      total = (total + annualContribution) * (1 + RETIREMENT_PARAMS.annualReturn)
+      annualContribution *= 1.04 // 4% annual increase in contributions
+    } else {
+      total *= 1.05 // 5% growth during retirement
+    }
+  }
+  
+  return data
 } 
