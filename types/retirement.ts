@@ -11,4 +11,11 @@ export const RETIREMENT_PARAMS = {
   maxContribution: 100000,  // Maximum monthly contribution
   minSavings: 0,           // Minimum current savings
   maxSavings: 10000000     // Maximum current savings
+}
+
+export interface RetirementDataPoint {
+  age: number
+  total: number
+  monthlyIncome: number
+  yearsSaving: number
 } 

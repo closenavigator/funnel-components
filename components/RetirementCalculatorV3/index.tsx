@@ -5,38 +5,13 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 import { Card, CardContent } from '@/components/ui/card'
 import { Slider } from '@/components/ui/slider'
 import { Alert } from '@/components/ui/alert'
-import { 
-  PiggyBank, 
-  Timer, 
-  DollarSign
-} from 'lucide-react'
+import { PiggyBank, Timer, DollarSign } from 'lucide-react'
+import { calculateFuture } from '@/lib/calculations'
 
 const RetirementCalculatorV3 = () => {
   const [age, setAge] = useState(30)
   const [monthlySavings, setMonthlySavings] = useState(1000)
   
-  const calculateFuture = (startingAge: number, monthly: number) => {
-    const RETIREMENT_AGE = 65
-    const years = RETIREMENT_AGE - startingAge
-    const YEARLY_RETURN = 0.08
-    
-    let total = 0
-    const yearlyContribution = monthly * 12
-    const dataPoints = []
-    
-    for (let year = 0; year <= years; year++) {
-      total = (total + yearlyContribution) * (1 + YEARLY_RETURN)
-      
-      dataPoints.push({
-        age: startingAge + year,
-        total,
-        monthlyIncome: (total * 0.04) / 12,
-        yearsSaving: year
-      })
-    }
-    return dataPoints
-  }
-
   const startNowData = calculateFuture(age, monthlySavings)
   const wait5YearsData = calculateFuture(age + 5, monthlySavings)
   
