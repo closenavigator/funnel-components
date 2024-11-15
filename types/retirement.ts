@@ -31,4 +31,17 @@ export interface RetirementResults {
   monthlyRetirementIncome: number
   yearsOfRetirement: number
   requiredMonthlyContribution?: number
+}
+
+export interface Person {
+  name: string
+  startAge: number
+  color: string
+  avatar: string
+  savings?: RetirementDataPoint[]
+}
+
+export interface RetirementData {
+  [key: string]: number
+  age: number
 } 

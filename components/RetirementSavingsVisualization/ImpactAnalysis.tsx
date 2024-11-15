@@ -1,21 +1,18 @@
 import { motion } from 'framer-motion'
-import { Person, RetirementData } from '@/types/retirement'
+import { Person } from '@/types/retirement'
 import { formatCurrency } from '@/lib/format'
 
 interface ImpactAnalysisProps {
   person: Person
   monthlyContribution: number
-  retirementData: RetirementData[]
+  retirementData: Person[]
 }
 
 export function ImpactAnalysis({
   person,
   monthlyContribution,
-  retirementData
 }: ImpactAnalysisProps) {
-  // Safely access the last element and handle potential undefined
-  const lastDataPoint = retirementData[retirementData.length - 1]
-  const finalSavings = lastDataPoint ? lastDataPoint[person.name] || 0 : 0
+  const finalSavings = person.savings?.[person.savings.length - 1]?.total || 0
 
   return (
     <motion.div 
