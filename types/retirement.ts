@@ -14,15 +14,23 @@ export interface RetirementResults {
 }
 
 // Types for the visualization calculator
+export interface SavingsDataPoint {
+  age: number
+  total: number
+  monthlyIncome: number
+  yearsSaving: number
+  [key: string]: number
+}
+
 export interface Person {
   name: string
   startAge: number
   color: string
   avatar: string
+  savings: SavingsDataPoint[]
 }
 
-export interface SavingsData {
-  age: number
+export interface RetirementData extends SavingsDataPoint {
   [key: string]: number
 }
 

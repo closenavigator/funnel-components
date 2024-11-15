@@ -1,4 +1,4 @@
-import { RetirementInputs, RetirementResults } from '@/types/retirement'
+import { RetirementInputs, RetirementResults, SavingsDataPoint } from '@/types/retirement'
 
 const ANNUAL_RETURN = 0.08 // 8% annual return
 const INFLATION_RATE = 0.04 // 4% annual inflation
@@ -10,16 +10,16 @@ export function calculateSavingsOverTime(
   monthlyContribution: number, 
   startAge: number, 
   years: number
-) {
+): SavingsDataPoint[] {
   let total = 0
   let annualContribution = monthlyContribution * 12
-  const data = []
+  const dataPoints = []
 
   for (let i = 0; i <= years; i++) {
     const age = startAge + i
-    data.push({
+    dataPoints.push({
       age,
-      [age < RETIREMENT_AGE ? 'savings' : 'retirement']: Math.round(total)
+      total: Math.round(total)
     })
 
     if (age < RETIREMENT_AGE) {
@@ -32,7 +32,7 @@ export function calculateSavingsOverTime(
     }
   }
 
-  return data
+  return dataPoints
 }
 
 export function calculateRetirement(inputs: RetirementInputs): RetirementResults {

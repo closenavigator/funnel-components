@@ -7,22 +7,7 @@ import { ProfileComparison } from './ProfileComparison'
 import { SavingsChart } from './SavingsChart'
 import { ImpactAnalysis } from './ImpactAnalysis'
 import { calculateSavingsOverTime } from '@/lib/calculations'
-
-// Define proper interfaces
-interface RetirementData {
-  age: number
-  total: number
-  monthlyIncome: number
-  yearsSaving: number
-  [key: string]: number // Allow for dynamic person-specific data
-}
-
-interface Person {
-  name: string
-  startAge: number
-  color: string
-  avatar: string
-}
+import { Person, RetirementData, SavingsDataPoint } from '@/types/retirement'
 
 const RetirementSavingsVisualization = () => {
   const [monthlyContribution, setMonthlyContribution] = useState(5000)
@@ -37,13 +22,13 @@ const RetirementSavingsVisualization = () => {
     ]
 
     return people.map(person => {
-      const savings = calculateSavingsOverTime(monthlyContribution, person.startAge, 40)
+      const savings = calculateSavingsOverTime(monthlyContribution, person.startAge, 40) as SavingsDataPoint[]
       return {
         ...person,
         savings
       }
     })
-  }, [viewerAge, monthlyContribution])
+  }, [viewerAge, monthlyContribution]) as Person[]
 
   return (
     <Card className="w-full max-w-7xl mx-auto">
@@ -73,13 +58,16 @@ const RetirementSavingsVisualization = () => {
           <ImpactAnalysis
             person={selectedPerson}
             monthlyContribution={monthlyContribution}
-            retirementData={retirementData.map(person => ({
-              age: person.savings[0].age,
-              total: person.savings[0].total || 0,
-              monthlyIncome: (person.savings[0].total || 0) * 0.04 / 12,
-              yearsSaving: 0,
-              [person.name]: person.savings[0].total || 0
-            }))}
+            retirementData={retirementData.map(person => {
+              const dataPoint = person.savings[0]
+              return {
+                age: dataPoint.age,
+                total: dataPoint.total,
+                monthlyIncome: dataPoint.total * 0.04 / 12,
+                yearsSaving: 0,
+                [person.name]: dataPoint.total
+              } as RetirementData
+            })}
           />
         )}
       </CardContent>

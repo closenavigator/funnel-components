@@ -1,27 +1,11 @@
 import { motion } from 'framer-motion'
-import { Person } from '@/types/retirement'
+import { Person, RetirementData } from '@/types/retirement'
 import { formatCurrency } from '@/lib/format'
 
-interface RetirementData {
-  [key: string]: number
-  age: number
-}
-
 interface ImpactAnalysisProps {
-  person: {
-    name: string
-    startAge: number
-    color: string
-    avatar: string
-  }
+  person: Person
   monthlyContribution: number
-  retirementData: Array<{
-    age: number
-    total: number
-    monthlyIncome: number
-    yearsSaving: number
-    [key: string]: number
-  }>
+  retirementData: RetirementData[]
 }
 
 export function ImpactAnalysis({
