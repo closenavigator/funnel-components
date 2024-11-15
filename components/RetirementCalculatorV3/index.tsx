@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Slider } from '@/components/ui/slider'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Alert } from '@/components/ui/alert'
 import { 
   PiggyBank, 
   Timer, 
@@ -21,7 +21,7 @@ const RetirementCalculatorV3 = () => {
     const YEARLY_RETURN = 0.08
     
     let total = 0
-    let yearlyContribution = monthly * 12
+    const yearlyContribution = monthly * 12
     const dataPoints = []
     
     for (let year = 0; year <= years; year++) {
