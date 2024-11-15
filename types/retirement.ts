@@ -13,9 +13,24 @@ export const RETIREMENT_PARAMS = {
   maxSavings: 10000000     // Maximum current savings
 }
 
+// Only types needed for V3
 export interface RetirementDataPoint {
   age: number
   total: number
   monthlyIncome: number
   yearsSaving: number
+}
+
+export interface RetirementInputs {
+  age: number
+  monthlyContribution: number
+  currentSavings: number
+  desiredMonthlyIncome?: number
+}
+
+export interface RetirementResults {
+  totalAtRetirement: number
+  monthlyRetirementIncome: number
+  yearsOfRetirement: number
+  requiredMonthlyContribution?: number
 } 
