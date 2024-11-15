@@ -31,13 +31,17 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 }
 
 export function SavingsChart({ data, selectedPerson }: SavingsChartProps) {
-  const chartData = data[0]?.savings.map((dataPoint, index) => {
+  if (!data.length) return null;
+
+  const chartData = data[0].savings?.map((dataPoint, index) => {
     const point: any = { age: dataPoint.age }
     data.forEach(person => {
-      point[person.name] = person.savings[index]?.total || 0
+      if (person.savings) {
+        point[person.name] = person.savings[index]?.total || 0
+      }
     })
     return point
-  })
+  }) || [];
 
   return (
     <div className="h-[400px] bg-gradient-to-br from-background to-muted rounded-lg p-4 border shadow-inner">
