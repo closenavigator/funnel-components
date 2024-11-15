@@ -7,22 +7,12 @@ interface SavingsChartProps {
   selectedPerson: Person | null
 }
 
-interface TooltipProps {
-  active?: boolean
-  payload?: Array<{
-    value: number
-    name: string
-    color: string
-  }>
-  label?: string
-}
-
-const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
+const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-background p-4 rounded-lg shadow-lg border">
         <p className="font-semibold mb-2">Edad: {label}</p>
-        {payload.map((entry) => (
+        {payload.map((entry: any) => (
           <div key={entry.name} className="flex items-center mb-1">
             <div 
               className="w-3 h-3 rounded-full mr-2" 
@@ -41,10 +31,18 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
 }
 
 export function SavingsChart({ data, selectedPerson }: SavingsChartProps) {
+  const chartData = data[0]?.savings.map((dataPoint, index) => {
+    const point: any = { age: dataPoint.age }
+    data.forEach(person => {
+      point[person.name] = person.savings[index]?.total || 0
+    })
+    return point
+  })
+
   return (
     <div className="h-[400px] bg-gradient-to-br from-background to-muted rounded-lg p-4 border shadow-inner">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+        <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
           <XAxis 
             dataKey="age" 

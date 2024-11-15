@@ -14,21 +14,21 @@ const RetirementSavingsVisualization = () => {
   const [viewerAge, setViewerAge] = useState(30)
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
 
-  const people = [
-    { name: "Tú", startAge: viewerAge, color: "#60A5FA", avatar: "👤" },
-    { name: "Ana", startAge: 25, color: "#34D399", avatar: "👩" },
-    { name: "Carlos", startAge: 35, color: "#F87171", avatar: "👨" }
-  ]
-
   const retirementData = useMemo(() => {
+    const people = [
+      { name: "Tú", startAge: viewerAge, color: "#60A5FA", avatar: "👤" },
+      { name: "Ana", startAge: 25, color: "#34D399", avatar: "👩" },
+      { name: "Carlos", startAge: 35, color: "#F87171", avatar: "👨" }
+    ]
+
     return people.map(person => {
-      const savings = calculateSavingsOverTime(monthlyContribution, person.startAge, 40) as SavingsDataPoint[]
+      const savings = calculateSavingsOverTime(monthlyContribution, person.startAge, 40)
       return {
         ...person,
         savings
       }
     })
-  }, [monthlyContribution, people]) as Person[]
+  }, [monthlyContribution, viewerAge]) as Person[]
 
   return (
     <Card className="w-full max-w-7xl mx-auto">
@@ -58,16 +58,13 @@ const RetirementSavingsVisualization = () => {
           <ImpactAnalysis
             person={selectedPerson}
             monthlyContribution={monthlyContribution}
-            retirementData={retirementData.map(person => {
-              const dataPoint = person.savings[0]
-              return {
-                age: dataPoint.age,
-                total: dataPoint.total,
-                monthlyIncome: dataPoint.total * 0.04 / 12,
-                yearsSaving: 0,
-                [person.name]: dataPoint.total
-              } as RetirementData
-            })}
+            retirementData={retirementData.map(person => ({
+              age: person.savings[0].age,
+              total: person.savings[0].total,
+              monthlyIncome: person.savings[0].monthlyIncome,
+              yearsSaving: person.savings[0].yearsSaving,
+              [person.name]: person.savings[0].total
+            }))}
           />
         )}
       </CardContent>

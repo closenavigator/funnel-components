@@ -4,7 +4,6 @@ const ANNUAL_RETURN = 0.08 // 8% annual return
 const INFLATION_RATE = 0.04 // 4% annual inflation
 const SAFE_WITHDRAWAL_RATE = 0.04 // 4% safe withdrawal rate
 const RETIREMENT_AGE = 65
-const LIFE_EXPECTANCY = 85
 
 export function calculateSavingsOverTime(
   monthlyContribution: number, 
@@ -12,26 +11,20 @@ export function calculateSavingsOverTime(
   years: number
 ): SavingsDataPoint[] {
   let total = 0
-  let annualContribution = monthlyContribution * 12
-  const dataPoints = []
-
-  for (let i = 0; i <= years; i++) {
-    const age = startAge + i
+  const dataPoints: SavingsDataPoint[] = []
+  
+  for (let year = 0; year <= years; year++) {
+    total = (total + (monthlyContribution * 12)) * (1 + ANNUAL_RETURN)
+    
     dataPoints.push({
-      age,
-      total: Math.round(total)
+      age: startAge + year,
+      total: Math.round(total),
+      monthlyIncome: Math.round((total * SAFE_WITHDRAWAL_RATE) / 12),
+      yearsSaving: year,
+      [startAge.toString()]: total // Add dynamic key for chart compatibility
     })
-
-    if (age < RETIREMENT_AGE) {
-      // Accumulation phase
-      total = (total + annualContribution) * (1 + ANNUAL_RETURN)
-      annualContribution *= (1 + INFLATION_RATE) // Increase contributions with inflation
-    } else {
-      // Retirement phase
-      total *= (1 + ANNUAL_RETURN - INFLATION_RATE) // Real return during retirement
-    }
   }
-
+  
   return dataPoints
 }
 
