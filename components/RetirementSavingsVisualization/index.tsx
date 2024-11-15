@@ -28,7 +28,7 @@ const RetirementSavingsVisualization = () => {
         savings
       }
     })
-  }, [viewerAge, monthlyContribution, people]) as Person[]
+  }, [monthlyContribution, people]) as Person[]
 
   return (
     <Card className="w-full max-w-7xl mx-auto">
@@ -53,7 +53,6 @@ const RetirementSavingsVisualization = () => {
         <SavingsChart
           data={retirementData}
           selectedPerson={selectedPerson}
-          people={people}
         />
         {selectedPerson && (
           <ImpactAnalysis
