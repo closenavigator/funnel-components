@@ -53,7 +53,7 @@ export function BrandClipperCalculator() {
     {
       title: "Funnel Metrics",
       description: "Configure your conversion rates",
-      component: <FunnelMetrics inputs={inputs} onChange={handleFunnelChange} />
+      component: <FunnelMetrics inputs={inputs} onFunnelChange={handleFunnelChange} />
     },
     {
       title: "Compensation",

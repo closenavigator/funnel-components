@@ -5,7 +5,7 @@ import { formatPercentage } from "@/lib/format"
 
 interface FunnelMetricsProps {
   inputs: ClipperInputs
-  onFunnelChange: (field: keyof FunnelMetricsType, value: number) => void
+  onFunnelChange: (field: keyof FunnelMetrics, value: number) => void
 }
 
 export function FunnelMetrics({ inputs, onFunnelChange }: FunnelMetricsProps) {
@@ -57,7 +57,7 @@ export function FunnelMetrics({ inputs, onFunnelChange }: FunnelMetricsProps) {
             min={0}
             max={metric.max * 100}
             step={0.1}
-            onValueChange={(value) => onFunnelChange(metric.id as keyof FunnelMetricsType, value[0] / 100)}
+            onValueChange={(value) => onFunnelChange(metric.id as keyof FunnelMetrics, value[0] / 100)}
           />
           <p className="text-sm text-muted-foreground text-center">
             {formatPercentage(metric.value)}
