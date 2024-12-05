@@ -35,6 +35,17 @@ export function calculateEarnings(
   inputs: ClipperInputs,
   customMetrics?: Partial<FunnelMetrics>
 ): ClipperResults {
+  // Validate and clamp inputs
+  const validatedInputs = {
+    ...inputs,
+    baseSalary: Math.max(CLIPPER_PARAMS.minBaseSalary, Math.min(CLIPPER_PARAMS.maxBaseSalary, inputs.baseSalary)),
+    videosPerMonth: Math.max(CLIPPER_PARAMS.minVideosPerMonth, Math.min(CLIPPER_PARAMS.maxVideosPerMonth, inputs.videosPerMonth)),
+    averageViews: Math.max(CLIPPER_PARAMS.minViewsPerVideo, Math.min(CLIPPER_PARAMS.maxViewsPerVideo, inputs.averageViews)),
+    viewBonusRate: Math.max(CLIPPER_PARAMS.minBonusRate, Math.min(CLIPPER_PARAMS.maxBonusRate, inputs.viewBonusRate)),
+    revenueSharePercent: Math.max(CLIPPER_PARAMS.minRevenueShare * 100, Math.min(CLIPPER_PARAMS.maxRevenueShare * 100, inputs.revenueSharePercent)),
+    averageProductPrice: Math.max(CLIPPER_PARAMS.minProductPrice, Math.min(CLIPPER_PARAMS.maxProductPrice, inputs.averageProductPrice))
+  }
+
   const { 
     baseSalary,
     videosPerMonth,
@@ -43,7 +54,7 @@ export function calculateEarnings(
     revenueSharePercent,
     averageProductPrice,
     compensationModel
-  } = inputs
+  } = validatedInputs
 
   // Calculate funnel metrics
   const totalViews = videosPerMonth * averageViews
