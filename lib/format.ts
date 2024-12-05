@@ -2,9 +2,9 @@
  * Format a number as currency in MXN
  */
 export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('es-MX', {
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'MXN',
+    currency: 'USD',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount)
