@@ -36,6 +36,11 @@ export function calculateEarnings(
   inputs: ClipperInputs,
   customMetrics?: Partial<FunnelMetrics>
 ): ClipperResults {
+  // Calculate average views from history
+  const averageViews = inputs.videoHistory.length > 0
+    ? inputs.videoHistory.reduce((sum, entry) => sum + entry.views, 0) / inputs.videoHistory.length
+    : 0
+
   // Calculate monthly videos
   const videosPerMonth = inputs.videosPerDay * 30
 
@@ -43,7 +48,6 @@ export function calculateEarnings(
   const validatedInputs = {
     ...inputs,
     videosPerDay: Math.max(CLIPPER_PARAMS.minVideosPerDay, Math.min(CLIPPER_PARAMS.maxVideosPerDay, inputs.videosPerDay)),
-    averageViews: Math.max(CLIPPER_PARAMS.minViewsPerVideo, Math.min(CLIPPER_PARAMS.maxViewsPerVideo, inputs.averageViews)),
     viewBonusRate: Math.max(CLIPPER_PARAMS.minBonusRate, Math.min(CLIPPER_PARAMS.maxBonusRate, inputs.viewBonusRate)),
     revenueSharePercent: Math.max(CLIPPER_PARAMS.minRevenueShare * 100, Math.min(CLIPPER_PARAMS.maxRevenueShare * 100, inputs.revenueSharePercent)),
     averageProductPrice: Math.max(CLIPPER_PARAMS.minProductPrice, Math.min(CLIPPER_PARAMS.maxProductPrice, inputs.averageProductPrice))
@@ -67,10 +71,10 @@ export function calculateEarnings(
   const viewBonus = (totalViews / 1000) * viewBonusRate
   const revenueShare = funnelResults.revenue * (revenueSharePercent / 100)
 
-  // Set base salary based on tier
-  const baseSalary = tier === 'clipperExpert' ? 
+  // Set base salary based on tier and input
+  const baseSalary = inputs.baseSalary ?? (tier === 'clipperExpert' ? 
     CLIPPER_PARAMS.maxBaseSalary : 
-    CLIPPER_PARAMS.minBaseSalary
+    CLIPPER_PARAMS.minBaseSalary)
 
   // Calculate monthly breakdown
   const monthlyBreakdown = {

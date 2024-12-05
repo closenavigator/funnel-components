@@ -42,14 +42,20 @@ export interface FunnelMetrics {
   monthlyImpressions: number
 }
 
+export interface VideoEntry {
+  date: string
+  views: number
+}
+
 export interface ClipperInputs {
   tier: ClipperTier
   videosPerDay: number
-  averageViews: number
+  videoHistory: VideoEntry[]
   viewBonusRate: number
   revenueSharePercent: number
   averageProductPrice: number
-  weeklyRecurring?: number // Only for clipperExpert
+  weeklyRecurring?: number
+  baseSalary?: number
   funnelMetrics: FunnelMetrics
 }
 

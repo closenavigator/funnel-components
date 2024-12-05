@@ -23,10 +23,11 @@ export function BrandClipperCalculator() {
   const [inputs, setInputs] = useState<ClipperInputs>({
     tier: 'brandClipper',
     videosPerDay: 2,
-    averageViews: 10000,
+    videoHistory: [],
     viewBonusRate: 1,
     revenueSharePercent: 10,
     averageProductPrice: 100,
+    baseSalary: undefined,
     funnelMetrics: {
       reelToProfile: CLIPPER_PARAMS.reelToProfile,
       profileToLink: CLIPPER_PARAMS.profileToLink,
