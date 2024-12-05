@@ -1,7 +1,8 @@
 import { 
   ClipperInputs, 
   ClipperResults, 
-  FunnelMetrics, 
+  FunnelMetrics,
+  FunnelResults,
   CLIPPER_PARAMS 
 } from '@/types/brandClipper'
 
