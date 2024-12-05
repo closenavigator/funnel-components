@@ -45,6 +45,13 @@ export interface FunnelMetrics {
 export interface VideoEntry {
   date: string
   views: number
+  likes?: number
+  shares?: number
+  comments?: number
+  platform: 'tiktok' | 'instagram' | 'youtube'
+  url: string
+  postId?: string
+  thumbnailUrl?: string
 }
 
 export interface ClipperInputs {

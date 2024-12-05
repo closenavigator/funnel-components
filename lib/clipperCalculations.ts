@@ -37,7 +37,7 @@ export function calculateEarnings(
   customMetrics?: Partial<FunnelMetrics>
 ): ClipperResults {
   // Calculate average views from history
-  const averageViews = inputs.videoHistory.length > 0
+  const calculatedAverageViews = inputs.videoHistory.length > 0
     ? inputs.videoHistory.reduce((sum, entry) => sum + entry.views, 0) / inputs.videoHistory.length
     : 0
 
@@ -55,7 +55,6 @@ export function calculateEarnings(
 
   const { 
     tier,
-    averageViews,
     viewBonusRate,
     revenueSharePercent,
     averageProductPrice,
@@ -63,7 +62,7 @@ export function calculateEarnings(
   } = validatedInputs
 
   // Calculate funnel metrics
-  const totalViews = videosPerMonth * averageViews
+  const totalViews = videosPerMonth * calculatedAverageViews
   const funnelResults = calculateFunnelMetrics(totalViews, inputs.funnelMetrics)
   funnelResults.revenue = funnelResults.sales * averageProductPrice
 
