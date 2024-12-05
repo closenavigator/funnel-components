@@ -8,7 +8,7 @@ import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
 import { Steps } from "@/components/ui/steps"
 import { calculateEarnings } from '@/lib/clipperCalculations'
-import { ClipperInputs, ClipperResults, CLIPPER_PARAMS, ClipperTier } from '@/types/brandClipper'
+import { ClipperInputs, ClipperResults, CLIPPER_PARAMS, ClipperTier, FunnelMetrics as FunnelMetricsType } from '@/types/brandClipper'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/format'
 
 // Import the components
@@ -71,7 +71,7 @@ export function BrandClipperCalculator() {
     setInputs(prev => ({ ...prev, [field]: value }))
   }
 
-  function handleFunnelChange(field: keyof FunnelMetrics, value: number) {
+  function handleFunnelChange(field: keyof FunnelMetricsType, value: number) {
     setInputs(prev => ({
       ...prev,
       funnelMetrics: { ...prev.funnelMetrics, [field]: value }
