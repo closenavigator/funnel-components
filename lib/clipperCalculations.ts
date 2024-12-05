@@ -36,11 +36,13 @@ export function calculateEarnings(
   inputs: ClipperInputs,
   customMetrics?: Partial<FunnelMetrics>
 ): ClipperResults {
+  // Calculate monthly videos
+  const videosPerMonth = inputs.videosPerDay * 30
+
   // Validate and clamp inputs
   const validatedInputs = {
     ...inputs,
-    baseSalary: Math.max(CLIPPER_PARAMS.minBaseSalary, Math.min(CLIPPER_PARAMS.maxBaseSalary, inputs.baseSalary)),
-    videosPerMonth: Math.max(CLIPPER_PARAMS.minVideosPerMonth, Math.min(CLIPPER_PARAMS.maxVideosPerMonth, inputs.videosPerMonth)),
+    videosPerDay: Math.max(CLIPPER_PARAMS.minVideosPerDay, Math.min(CLIPPER_PARAMS.maxVideosPerDay, inputs.videosPerDay)),
     averageViews: Math.max(CLIPPER_PARAMS.minViewsPerVideo, Math.min(CLIPPER_PARAMS.maxViewsPerVideo, inputs.averageViews)),
     viewBonusRate: Math.max(CLIPPER_PARAMS.minBonusRate, Math.min(CLIPPER_PARAMS.maxBonusRate, inputs.viewBonusRate)),
     revenueSharePercent: Math.max(CLIPPER_PARAMS.minRevenueShare * 100, Math.min(CLIPPER_PARAMS.maxRevenueShare * 100, inputs.revenueSharePercent)),
@@ -48,34 +50,41 @@ export function calculateEarnings(
   }
 
   const { 
-    baseSalary,
-    videosPerMonth,
+    tier,
     averageViews,
     viewBonusRate,
     revenueSharePercent,
     averageProductPrice,
-    compensationModel
+    weeklyRecurring
   } = validatedInputs
 
   // Calculate funnel metrics
   const totalViews = videosPerMonth * averageViews
-  const funnelResults = calculateFunnelMetrics(totalViews, customMetrics)
+  const funnelResults = calculateFunnelMetrics(totalViews, inputs.funnelMetrics)
   funnelResults.revenue = funnelResults.sales * averageProductPrice
 
   // Calculate different income streams
   const viewBonus = (totalViews / 1000) * viewBonusRate
   const revenueShare = funnelResults.revenue * (revenueSharePercent / 100)
 
-  // Determine which components to include based on compensation model
+  // Set base salary based on tier
+  const baseSalary = tier === 'clipperExpert' ? 
+    CLIPPER_PARAMS.maxBaseSalary : 
+    CLIPPER_PARAMS.minBaseSalary
+
+  // Calculate monthly breakdown
   const monthlyBreakdown = {
     baseSalary,
-    viewBonus: compensationModel === 'baseAndViews' || compensationModel === 'complete' ? viewBonus : 0,
-    revenueShare: compensationModel === 'baseAndRevenue' || compensationModel === 'complete' ? revenueShare : 0,
-    total: baseSalary
+    viewBonus,
+    revenueShare,
+    total: baseSalary + viewBonus + revenueShare
   }
 
-  // Add applicable bonuses to total
-  monthlyBreakdown.total += monthlyBreakdown.viewBonus + monthlyBreakdown.revenueShare
+  // Add weekly recurring bonus for clipperExpert
+  if (tier === 'clipperExpert' && weeklyRecurring) {
+    const weeklyBonus = weeklyRecurring * 4
+    monthlyBreakdown.total += weeklyBonus
+  }
 
   // Calculate annual figures
   const annualBreakdown = {
