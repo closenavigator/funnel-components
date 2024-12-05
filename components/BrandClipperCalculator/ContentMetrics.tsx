@@ -10,20 +10,19 @@ interface ContentMetricsProps {
 }
 
 export function ContentMetrics({ inputs, onChange }: ContentMetricsProps) {
-  const monthlyVideos = inputs.videosPerDay * 30
-  const monthlyViews = monthlyVideos * inputs.averageViews
-
   return (
     <div className="space-y-8">
       <div className="space-y-4">
-        <Label htmlFor="videosPerDay">Videos Per Day</Label>
+        <Label htmlFor="videosPerDay">Videos por día</Label>
         <Input
           id="videosPerDay"
           type="number"
           value={inputs.videosPerDay}
-          onChange={(e) => onChange('videosPerDay', Number(e.target.value))}
-          min={CLIPPER_PARAMS.minVideosPerDay}
-          max={CLIPPER_PARAMS.maxVideosPerDay}
+          onChange={(e) => onChange('videosPerDay', Math.max(
+            CLIPPER_PARAMS.minVideosPerDay,
+            Math.min(CLIPPER_PARAMS.maxVideosPerDay, Number(e.target.value))
+          ))}
+          className="text-center text-lg"
         />
         <Slider
           value={[inputs.videosPerDay]}
@@ -33,19 +32,21 @@ export function ContentMetrics({ inputs, onChange }: ContentMetricsProps) {
           onValueChange={(value) => onChange('videosPerDay', value[0])}
         />
         <p className="text-sm text-muted-foreground text-center">
-          {monthlyVideos} videos per month
+          {inputs.videosPerDay} videos diarios
         </p>
       </div>
 
       <div className="space-y-4">
-        <Label htmlFor="averageViews">Average Views per Video</Label>
+        <Label htmlFor="averageViews">Vistas promedio por video</Label>
         <Input
           id="averageViews"
           type="number"
           value={inputs.averageViews}
-          onChange={(e) => onChange('averageViews', Number(e.target.value))}
-          min={CLIPPER_PARAMS.minViewsPerVideo}
-          max={CLIPPER_PARAMS.maxViewsPerVideo}
+          onChange={(e) => onChange('averageViews', Math.max(
+            CLIPPER_PARAMS.minViewsPerVideo,
+            Math.min(CLIPPER_PARAMS.maxViewsPerVideo, Number(e.target.value))
+          ))}
+          className="text-center text-lg"
         />
         <Slider
           value={[inputs.averageViews]}
@@ -55,7 +56,7 @@ export function ContentMetrics({ inputs, onChange }: ContentMetricsProps) {
           onValueChange={(value) => onChange('averageViews', value[0])}
         />
         <p className="text-sm text-muted-foreground text-center">
-          {formatNumber(monthlyViews)} total views per month
+          {formatNumber(inputs.averageViews)} vistas por video
         </p>
       </div>
     </div>
