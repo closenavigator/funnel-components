@@ -12,8 +12,8 @@ export const CLIPPER_PARAMS = {
   // Input constraints
   minBaseSalary: 1000,
   maxBaseSalary: 50000,
-  minVideosPerMonth: 1,
-  maxVideosPerMonth: 100,
+  minVideosPerDay: 1,
+  maxVideosPerDay: 5,
   minViewsPerVideo: 100,
   maxViewsPerVideo: 1000000,
   minBonusRate: 0.1,
@@ -21,30 +21,36 @@ export const CLIPPER_PARAMS = {
   minRevenueShare: 0,
   maxRevenueShare: 0.5,
   minProductPrice: 10,
-  maxProductPrice: 10000
+  maxProductPrice: 10000,
+  minWeeklyRecurring: 100,
+  maxWeeklyRecurring: 10000,
+  
+  // Profile metrics
+  minMonthlyImpressions: 1000,
+  maxMonthlyImpressions: 10000000,
 }
 
-export type CompensationModel = 
-  | 'baseSalary'
-  | 'baseAndViews'
-  | 'baseAndRevenue'
-  | 'complete'
-
-export interface ClipperInputs {
-  baseSalary: number
-  videosPerMonth: number
-  averageViews: number
-  viewBonusRate: number
-  revenueSharePercent: number
-  averageProductPrice: number
-  compensationModel: CompensationModel
-}
+export type ClipperTier = 
+  | 'brandClipper'
+  | 'clipperExpert'
 
 export interface FunnelMetrics {
   reelToProfile: number
   profileToLink: number
   linkToLanding: number
   landingToSale: number
+  monthlyImpressions: number
+}
+
+export interface ClipperInputs {
+  tier: ClipperTier
+  videosPerDay: number
+  averageViews: number
+  viewBonusRate: number
+  revenueSharePercent: number
+  averageProductPrice: number
+  weeklyRecurring?: number // Only for clipperExpert
+  funnelMetrics: FunnelMetrics
 }
 
 export interface EarningsBreakdown {
