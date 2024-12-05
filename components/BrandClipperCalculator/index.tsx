@@ -11,6 +11,13 @@ import { calculateEarnings } from '@/lib/clipperCalculations'
 import { ClipperInputs, ClipperResults, CLIPPER_PARAMS, ClipperTier } from '@/types/brandClipper'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/format'
 
+// Import the components
+import { TierSelection } from './TierSelection'
+import { ContentMetrics } from './ContentMetrics'
+import { FunnelMetrics } from './FunnelMetrics'
+import { CompensationSettings } from './CompensationSettings'
+import { ResultsView } from './ResultsView'
+
 export function BrandClipperCalculator() {
   const [currentStep, setCurrentStep] = useState(0)
   const [inputs, setInputs] = useState<ClipperInputs>({
@@ -28,6 +35,9 @@ export function BrandClipperCalculator() {
       monthlyImpressions: 100000
     }
   })
+
+  // Calculate results for the ResultsView component
+  const results = calculateEarnings(inputs)
 
   const steps = [
     {
@@ -53,7 +63,7 @@ export function BrandClipperCalculator() {
     {
       title: "Results",
       description: "View your potential earnings",
-      component: <ResultsView inputs={inputs} />
+      component: <ResultsView inputs={inputs} results={results} />
     }
   ]
 
