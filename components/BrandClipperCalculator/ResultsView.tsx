@@ -13,7 +13,7 @@ export function ResultsView({ inputs, results }: ResultsViewProps) {
   const metrics = [
     {
       label: "Ingresos Mensuales",
-      value: formatCurrency(results.monthlyEarnings),
+      value: formatCurrency(results.monthly.total),
       icon: DollarSign,
       description: "Total estimado mensual"
     },
@@ -25,13 +25,13 @@ export function ResultsView({ inputs, results }: ResultsViewProps) {
     },
     {
       label: "Vistas Totales",
-      value: formatNumber(results.monthlyViews),
+      value: formatNumber(results.funnel.totalViews),
       icon: Users,
       description: "Alcance mensual"
     },
     {
       label: "Ventas Generadas",
-      value: formatNumber(results.monthlySales),
+      value: formatNumber(results.funnel.sales),
       icon: TrendingUp,
       description: "Conversiones mensuales"
     }
@@ -40,15 +40,15 @@ export function ResultsView({ inputs, results }: ResultsViewProps) {
   const chartData = [
     {
       name: "Base",
-      amount: results.breakdown.baseSalary
+      amount: results.monthly.baseSalary
     },
     {
       name: "Bonus Vistas",
-      amount: results.breakdown.viewBonus
+      amount: results.monthly.viewBonus
     },
     {
       name: "Revenue Share",
-      amount: results.breakdown.revenueShare
+      amount: results.monthly.revenueShare
     }
   ]
 
